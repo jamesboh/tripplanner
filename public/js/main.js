@@ -1,4 +1,5 @@
-var drawMarker;
+var drawMarker, 
+    markers =[];
 
 $(function initializeMap (){
 
@@ -56,6 +57,7 @@ $(function initializeMap (){
       position: latLng
     });
     marker.setMap(currentMap);
+    markers.push(marker);
   }
 
   // drawMarker('hotel', [40.705137, -74.007624]);

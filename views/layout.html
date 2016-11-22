@@ -38,7 +38,8 @@
 
     <script>
     // $(function initializeMap (){});
-
+      var counter = 1,
+          day = 1;
 
       var hotels = {{ hotels | dump | safe }};
       var restaurants = {{ restaurants | dump | safe }};
@@ -57,46 +58,48 @@
       })
 
       var itinerary = {
-        hotels: [],
-        restaurants: [],
-        activities: []
+        '1': {
+          hotels: [],
+          restaurants: [],
+          activities: []
+        }
       };
 
       $('#hotel-choices').next('button').on('click', function(){
         var selected = $( "#hotel-choices option:selected" )
-        itinerary.hotels.push(selected.val());
-        $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
-
         var hotelInfo = hotels.filter(function(hotel) {
           return hotel.name === selected.val();
         })
         var latLng = hotelInfo[0].place.location;
+        itinerary[day].hotels.push(selected.val(),latLng);
+        $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
 
+  
         drawMarker('hotel', latLng);
 
       })
 
       $('#restaurant-choices').next('button').on('click', function(){
         var selected = $( "#restaurant-choices option:selected" )
-        itinerary.restaurants.push($( "#restaurant-choices option:selected" ).text());
-        $('#my-restaurant').append($('<span></span>').addClass('title').text(selected.val()));
-
         var restaurantInfo = restaurants.filter(function(restaurant) {
           return restaurant.name === selected.val();
         })
         var latLng = restaurantInfo[0].place.location;
+        itinerary[day].restaurants.push($( "#restaurant-choices option:selected" ).text(), latLng);
+        $('#my-restaurant').append($('<span></span>').addClass('title').text(selected.val()));
 
         drawMarker('restaurant', latLng);
       })
 
       $('#activity-choices').next('button').on('click', function(){
         var selected = $( "#activity-choices option:selected" )
-        itinerary.activities.push($( "#activity-choices option:selected" ).text());
-        $('#my-activity').append($('<span></span>').addClass('title').text(selected.val()));
         var activityInfo = activities.filter(function(activity) {
           return activity.name === selected.val();
         })
         var latLng = activityInfo[0].place.location;
+        itinerary[day].activities.push($( "#activity-choices option:selected" ).text(), latLng);
+        $('#my-activity').append($('<span></span>').addClass('title').text(selected.val()));
+        
 
         drawMarker('activity', latLng);
       })
@@ -105,19 +108,48 @@
       // REMOVING
       $('#my-hotel > :first-child').on('click', function(){
 
-        var removedItem = itinerary.hotels.shift();
-
-        console.log(removedItem);        
-
-        // var hotelInfo = hotels.filter(function(hotel) {
-        //   return hotel.name === selected.val();
-        // })
-        // var latLng = hotelInfo[0].place.location;
-
-        // drawMarker('hotel', latLng);
+        var removedItem = itinerary[day].hotels.splice(0,2);
+        
+        var removeMarker = markers.filter(function(marker) {
+          if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
+            marker.setMap(null);
+          }
+        })
+        $('#my-hotel > :nth-child(2)').remove();
 
       })
 
+      $('#my-restaurant > :first-child').on('click', function(){
+
+        var removedItem = itinerary[day].restaurants.splice(0,2);
+        
+        var removeMarker = markers.filter(function(marker) {
+          if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
+            marker.setMap(null);
+          }
+        })
+        $('#my-restaurant > :nth-child(2)').remove();
+
+      })
+
+      $('#my-activity > :first-child').on('click', function(){
+
+        var removedItem = itinerary[day].activities.splice(0,2);
+        
+        var removeMarker = markers.filter(function(marker) {
+          if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
+            marker.setMap(null);
+          }
+        })
+        $('#my-activity > :nth-child(2)').remove();
+
+      })
+
+      $('#day-add').on('click', function() {
+        $(this).before($('<button></button>').addClass('btn btn-circle day-btn').text(++counter));
+      })
+
+      //Switch Days now....
     </script>
 
 
