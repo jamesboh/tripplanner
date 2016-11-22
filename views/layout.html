@@ -35,5 +35,91 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfQxgWt-LSZcEmTEN8581Uq9SzZHnpuys"></script>
     <script src="/js/main.js"></script>
 
+
+    <script>
+    // $(function initializeMap (){});
+
+
+      var hotels = {{ hotels | dump | safe }};
+      var restaurants = {{ restaurants | dump | safe }};
+      var activities = {{ activities | dump | safe }};
+
+
+      // ADDING
+      $.each(hotels, function(key, hotel) {
+        $('#hotel-choices').append($("<option></option>").attr("value", hotel.name).text(hotel.name))
+      })
+      $.each(restaurants, function(key, restaurant) {
+        $('#restaurant-choices').append($("<option></option>").attr("value", restaurant.name).text(restaurant.name));
+      })
+      $.each(activities, function(key, activity) {
+        $('#activity-choices').append($("<option></option>").attr("value", activity.name).text(activity.name));
+      })
+
+      var itinerary = {
+        hotels: [],
+        restaurants: [],
+        activities: []
+      };
+
+      $('#hotel-choices').next('button').on('click', function(){
+        var selected = $( "#hotel-choices option:selected" )
+        itinerary.hotels.push(selected.val());
+        $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
+
+        var hotelInfo = hotels.filter(function(hotel) {
+          return hotel.name === selected.val();
+        })
+        var latLng = hotelInfo[0].place.location;
+
+        drawMarker('hotel', latLng);
+
+      })
+
+      $('#restaurant-choices').next('button').on('click', function(){
+        var selected = $( "#restaurant-choices option:selected" )
+        itinerary.restaurants.push($( "#restaurant-choices option:selected" ).text());
+        $('#my-restaurant').append($('<span></span>').addClass('title').text(selected.val()));
+
+        var restaurantInfo = restaurants.filter(function(restaurant) {
+          return restaurant.name === selected.val();
+        })
+        var latLng = restaurantInfo[0].place.location;
+
+        drawMarker('restaurant', latLng);
+      })
+
+      $('#activity-choices').next('button').on('click', function(){
+        var selected = $( "#activity-choices option:selected" )
+        itinerary.activities.push($( "#activity-choices option:selected" ).text());
+        $('#my-activity').append($('<span></span>').addClass('title').text(selected.val()));
+        var activityInfo = activities.filter(function(activity) {
+          return activity.name === selected.val();
+        })
+        var latLng = activityInfo[0].place.location;
+
+        drawMarker('activity', latLng);
+      })
+
+
+      // REMOVING
+      $('#my-hotel > :first-child').on('click', function(){
+
+        var removedItem = itinerary.hotels.shift();
+
+        console.log(removedItem);        
+
+        // var hotelInfo = hotels.filter(function(hotel) {
+        //   return hotel.name === selected.val();
+        // })
+        // var latLng = hotelInfo[0].place.location;
+
+        // drawMarker('hotel', latLng);
+
+      })
+
+    </script>
+
+
   </body>
 </html>
