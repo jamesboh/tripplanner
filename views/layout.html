@@ -160,6 +160,7 @@
         //add day to itinerary
         // var currentDay = day++
         selectedDay++;
+        console.log(selectedDay)
 
         itinerary[selectedDay] = {
           hotels: [],
@@ -172,12 +173,14 @@
           marker.setMap(null);
         });
 
+        $('#day-title > span').text('Day ' + selectedDay);
+
         //Switch Days now.... 
         $('.day-btn:not(#day-add)').on('click', function() {
           $('.day-btn').removeClass('current-day');
           $(this).addClass('current-day');
 
-          selectedDay = $(this).text();
+          selectedDay = Number($(this).text());
           
           $('#itinerary').find('span').remove()          
           markers.forEach(function(marker) {
@@ -188,34 +191,30 @@
             for (var i = 0; i < itinerary[selectedDay][type].length; i+=2) {
               var typeName = itinerary[selectedDay][type][i];
               var typeLatLng = itinerary[selectedDay][type][i+1];
+
+              if(type === 'hotels') {
+                $('#my-hotel').append($('<span></span>').addClass('title').text(typeName));
+                drawMarker('hotel', typeLatLng);
+              }
+              if(type === 'restaurants') {
+                $('#my-restaurant').append($('<span></span>').addClass('title').text(typeName));
+                drawMarker('restaurant', typeLatLng);
+              }
+              if(type === 'activities') {
+                $('#my-activity').append($('<span></span>').addClass('title').text(typeName));
+                drawMarker('activity', typeLatLng);
+              }
             }
           }
-
-          // for (var type in itinerary[selectedDay]) {
-          //   // for (var i = 0; i < itinerary[selectedDay].length; i+=2) {
-          //   //   console.log(itinerary[selectedDay][type][0]);
-          //   // }
-          //   console.log(type)
-          // }          
-        // var selected = $( "#hotel-choices option:selected" )
-        // var hotelInfo = hotels.filter(function(hotel) {
-        //   return hotel.name === selected.val();
-        // })
-
-        // var latLng = hotelInfo[0].place.location;
-        // itinerary[selectedDay].hotels.push(selected.val(),latLng);
-        // $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
-
-        // drawMarker('hotel', latLng);
-
-
+          $('#day-title > span').text('Day ' + selectedDay);
         })
-
-        
-
       })
 
-
+      $('#day-remove').on('click', function() {
+        $('.day-buttons :nth-last-child(2)').remove();
+        selectedDay--;
+        console.log(selectedDay)
+      })
 
 
 
