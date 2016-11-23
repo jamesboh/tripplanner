@@ -39,7 +39,8 @@
     <script>
     // $(function initializeMap (){});
       var counter = 1,
-          day = 1;
+          // day = 1,
+          selectedDay = 1;
 
       var hotels = {{ hotels | dump | safe }};
       var restaurants = {{ restaurants | dump | safe }};
@@ -65,16 +66,16 @@
         }
       };
 
+      // Adding choices
       $('#hotel-choices').next('button').on('click', function(){
         var selected = $( "#hotel-choices option:selected" )
         var hotelInfo = hotels.filter(function(hotel) {
           return hotel.name === selected.val();
         })
         var latLng = hotelInfo[0].place.location;
-        itinerary[day].hotels.push(selected.val(),latLng);
+        itinerary[selectedDay].hotels.push(selected.val(),latLng);
         $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
 
-  
         drawMarker('hotel', latLng);
 
       })
@@ -85,7 +86,7 @@
           return restaurant.name === selected.val();
         })
         var latLng = restaurantInfo[0].place.location;
-        itinerary[day].restaurants.push($( "#restaurant-choices option:selected" ).text(), latLng);
+        itinerary[selectedDay].restaurants.push($( "#restaurant-choices option:selected" ).text(), latLng);
         $('#my-restaurant').append($('<span></span>').addClass('title').text(selected.val()));
 
         drawMarker('restaurant', latLng);
@@ -97,7 +98,7 @@
           return activity.name === selected.val();
         })
         var latLng = activityInfo[0].place.location;
-        itinerary[day].activities.push($( "#activity-choices option:selected" ).text(), latLng);
+        itinerary[selectedDay].activities.push($( "#activity-choices option:selected" ).text(), latLng);
         $('#my-activity').append($('<span></span>').addClass('title').text(selected.val()));
         
 
@@ -108,7 +109,7 @@
       // REMOVING
       $('#my-hotel > :first-child').on('click', function(){
 
-        var removedItem = itinerary[day].hotels.splice(0,2);
+        var removedItem = itinerary[selectedDay].hotels.splice(0,2);
         
         var removeMarker = markers.filter(function(marker) {
           if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
@@ -121,7 +122,7 @@
 
       $('#my-restaurant > :first-child').on('click', function(){
 
-        var removedItem = itinerary[day].restaurants.splice(0,2);
+        var removedItem = itinerary[selectedDay].restaurants.splice(0,2);
         
         var removeMarker = markers.filter(function(marker) {
           if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
@@ -134,7 +135,7 @@
 
       $('#my-activity > :first-child').on('click', function(){
 
-        var removedItem = itinerary[day].activities.splice(0,2);
+        var removedItem = itinerary[selectedDay].activities.splice(0,2);
         
         var removeMarker = markers.filter(function(marker) {
           if(marker.position.lat().toFixed(6)/1 === removedItem[1][0] && marker.position.lng().toFixed(6)/1 === removedItem[1][1]) {
@@ -149,7 +150,76 @@
         $(this).before($('<button></button>').addClass('btn btn-circle day-btn').text(++counter));
       })
 
-      //Switch Days now....
+      
+
+      //Adding new day
+      $('#day-add').on('click', function() {
+        $('.day-btn').removeClass('current-day');
+        $(this).prev().addClass('current-day');
+
+        //add day to itinerary
+        // var currentDay = day++
+        selectedDay++;
+
+        itinerary[selectedDay] = {
+          hotels: [],
+          restaurants: [],
+          activities: []
+        }
+
+        $('#itinerary').find('span').remove()   
+        markers.forEach(function(marker) {
+          marker.setMap(null);
+        });
+
+        //Switch Days now.... 
+        $('.day-btn:not(#day-add)').on('click', function() {
+          $('.day-btn').removeClass('current-day');
+          $(this).addClass('current-day');
+
+          selectedDay = $(this).text();
+          
+          $('#itinerary').find('span').remove()          
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+
+          for (var type in itinerary[selectedDay]) {
+            for (var i = 0; i < itinerary[selectedDay][type].length; i+=2) {
+              var typeName = itinerary[selectedDay][type][i];
+              var typeLatLng = itinerary[selectedDay][type][i+1];
+            }
+          }
+
+          // for (var type in itinerary[selectedDay]) {
+          //   // for (var i = 0; i < itinerary[selectedDay].length; i+=2) {
+          //   //   console.log(itinerary[selectedDay][type][0]);
+          //   // }
+          //   console.log(type)
+          // }          
+        // var selected = $( "#hotel-choices option:selected" )
+        // var hotelInfo = hotels.filter(function(hotel) {
+        //   return hotel.name === selected.val();
+        // })
+
+        // var latLng = hotelInfo[0].place.location;
+        // itinerary[selectedDay].hotels.push(selected.val(),latLng);
+        // $('#my-hotel').append($('<span></span>').addClass('title').text(selected.val()));
+
+        // drawMarker('hotel', latLng);
+
+
+        })
+
+        
+
+      })
+
+
+
+
+
+
     </script>
 
 
